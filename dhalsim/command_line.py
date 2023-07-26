@@ -55,7 +55,7 @@ class Runner():
 
     def run_simulation(self, intermediate_yaml_path):
 
-        subprocess.run(["sudo", "pkill - f - u", "root", "python -m cpppo.server.enip"])
+        subprocess.run(["sudo", "pkill", "-f", "-u", "python -m cpppo.server.enip"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         subprocess.run(["sudo", "mn", "-c"])
 
         InputFilesCopier(self.config_file, intermediate_yaml_path).copy_input_files()
