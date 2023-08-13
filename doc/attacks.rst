@@ -12,6 +12,7 @@ device attacks
 --------------
 
 Device attacks are attacks that are performed at the PLC itself. Imagine it as attacks where the attacker has physical access to the PLC being attacked.
+设备攻击是在PLC本身上执行的攻击。可以将其想象为攻击者对受攻击的PLC具有物理访问权限时执行的攻击
 
 Example:
 
