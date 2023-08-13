@@ -2,10 +2,13 @@ Attacks
 =======
 
 DHALSIM has support for device attacks and network attacks. This chapter will explain the configuration for these.
+DHALSIM支持设备攻击和网络攻击。本章将解释这些攻击的配置
 
 If you want to put the attacks in a separate file, see the section :ref:`Attacks in a separate file`.
+如果您想将攻击放在单独的文件中，请参见章节 :ref:`将攻击放在单独的文件中`
 
 device attacks
+设备攻击
 --------------
 
 Device attacks are attacks that are performed at the PLC itself. Imagine it as attacks where the attacker has physical access to the PLC being attacked.
