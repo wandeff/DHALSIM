@@ -106,23 +106,23 @@ sensors
 ~~~~~~~~~~~~
 传感器可以是以下类型之一：
 
-* 水箱水位
-    * 使用 :code:`.inp` 文件中的水箱名称。
-* 管道压力
-    * 使用 :code:`.inp` 文件中的管道名称。
-* 阀门流量
-    * 使用 :code:`.inp` 文件中的阀门名称 + :code:`F`。示例： :code:`V3F`。
-* 泵流量
-    * 使用 :code:`.inp` 文件中的泵名称 + :code:`F`。示例： :code:`P2F`。
+* Tank level 水箱水位
+    * 使用 :code:`.inp` 文件中的tank名称。
+* Junction pressure 管道压力
+    * 使用 :code:`.inp` 文件中的junction名称。
+* Valve flow 阀门流量
+    * 使用 :code:`.inp` 文件中的valve名称 + :code:`F`。示例： :code:`V3F`。
+* Pump flow 泵流量
+    * 使用 :code:`.inp` 文件中的pump名称 + :code:`F`。示例： :code:`P2F`。
 
 actuators
 ~~~~~~~~~~~~
 执行器可以是以下类型之一：
 
-* 阀门状态
-    * 使用 :code:`.inp` 文件中的阀门名称。
-* 泵状态
-    * 使用 :code:`.inp` 文件中的泵名称。
+* Valve status 阀门状态
+    * 使用 :code:`.inp` 文件中的valve名称。
+* Pump status 泵状态
+    * 使用 :code:`.inp` 文件中的pump名称。
 
 network_topology_type
 --------------------------------
