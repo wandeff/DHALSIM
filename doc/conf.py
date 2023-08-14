@@ -1,32 +1,27 @@
-# Configuration file for the Sphinx documentation builder.
+# Sphinx文档生成器的配置文件。
 #
-# This file only contains a selection of the most common options. For a full
-# list see the documentation:
+# 本文件仅包含一些最常用的选项。完整列表请参阅文档：
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
-# -- Path setup --------------------------------------------------------------
+# -- 路径设置 --------------------------------------------------------------
 
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
+# 如果扩展（或要使用autodoc自动文档生成的模块）在其他目录中，
+# 在此处将这些目录添加到sys.path。如果目录相对于文档根目录，则使用os.path.abspath使其绝对，如下所示。
 #
 import os
 import sys
 
 sys.path.insert(0, os.path.abspath('../..'))
 
-# -- Project information -----------------------------------------------------
-
+# -- 项目信息 -----------------------------------------------------
 project = 'dhalsim'
 copyright = '2021, Andrés F. Murillo, Robert van Dijk, Luc Jonker, Simcha Vos, Maarten Weyns'
 author = 'Andrés F. Murillo, Robert van Dijk, Luc Jonker, Simcha Vos, Maarten Weyns'
 
-# -- General configuration ---------------------------------------------------
+# -- 通用配置 ---------------------------------------------------
 import sphinx_rtd_theme
 
-# Add any Sphinx extension module names here, as strings. They can be
-# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
-# ones.
+# 在此处添加任何Sphinx扩展模块名称，作为字符串。它们可以是随Sphinx一起提供的扩展（命名为'sphinx.ext.*'）或您的自定义扩展。
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx_rtd_theme',
@@ -36,27 +31,24 @@ extensions = [
 
 autodoc_mock_imports = ['thread', 'py2_logger', 'topo', 'basePLC', 'entities', 'automatic_node', 'minicps']
 
-# Add any paths that contain templates here, relative to this directory.
+# 在此处添加包含模板的任何路径，相对于此目录。
 # templates_path = ['_templates']
 
-# List of patterns, relative to source directory, that match files and
-# directories to ignore when looking for source files.
-# This pattern also affects html_static_path and html_extra_path.
+# 匹配文件和目录的模式列表，相对于源目录，用于在查找源文件时忽略。
+# 此模式还会影响html_static_path和html_extra_path。
 exclude_patterns = []
 
-# -- Options for HTML output -------------------------------------------------
+# -- HTML输出选项 -------------------------------------------------
 
-# The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes.
+# 用于HTML和HTML Help页面的主题。有关内置主题的列表，请参见文档。
 #
 html_theme = 'sphinx_rtd_theme'
 
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
+# 包含自定义静态文件（例如样式表）的路径，相对于此目录。
+# 在内置静态文件之后复制，因此名为"default.css"的文件将覆盖内置的"default.css"。
 # html_static_path = ['_static']
 
-# -- Options for Latex output ------------------------------------------------
+# -- LaTeX输出选项 ------------------------------------------------
 
 latex_toplevel_sectioning = 'section'
 
@@ -72,3 +64,4 @@ latex_docclass = {
     'howto': 'TUD-report2020',
     'manual': 'TUD-report2020',
 }
+
