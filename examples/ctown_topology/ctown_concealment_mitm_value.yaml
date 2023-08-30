@@ -3,17 +3,17 @@ network_attacks:
   type: concealment_mitm
   tags:
     - tag: T3
-      offset: 10.0
+      offset: 8.0
     - tag: T4
-      offset: 10.0
+      offset: 8.0
   target: PLC4
   concealment_data:
     type: value
     concealment_value:
       - tag: T3
-        value: 10.0
+        value: 8.0
       - tag: T4
-        value: 10.0
+        value: 8.0
   trigger:
     start: 10
     end: 15
