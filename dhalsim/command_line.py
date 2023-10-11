@@ -55,7 +55,8 @@ class Runner():
 
     def run_simulation(self, intermediate_yaml_path):
 
-        subprocess.run(["sudo", "pkill", "-f", "-u", "python -m cpppo.server.enip"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        subprocess.run(["sudo", "pkill", "-f", "-u", "root", "python -m cpppo.server.enip"], stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE)
         subprocess.run(["sudo", "mn", "-c"])
 
         InputFilesCopier(self.config_file, intermediate_yaml_path).copy_input_files()
@@ -68,6 +69,7 @@ class Runner():
         self.automatic_run = subprocess.Popen(
             ["python2", str(automatic_run_path), str(intermediate_yaml_path)])
         self.automatic_run.wait()
+
 
 def main():
     parser = argparse.ArgumentParser(description='Executes DHALSIM based on a config file')

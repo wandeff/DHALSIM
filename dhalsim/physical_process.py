@@ -124,7 +124,6 @@ class PhysicalPlant:
         self.db_sleep_time = random.uniform(0.01, 0.1)
         self.logger.info("DB Sleep time: " + str(self.db_sleep_time))
 
-
     def prepare_wntr_simulator(self):
         self.logger.info("Preparing wntr simulation")
         self.wn = wntr.network.WaterNetworkModel(self.data['inp_file'])
@@ -290,7 +289,7 @@ class PhysicalPlant:
                 self.logger.error('Invalid actuator!')
 
         self.actuator_list = dict(zip(actuator_names, actuator_status))
-        
+
     def register_initial_results(self):
         self.values_list = [self.master_time, datetime.now()]
 
@@ -322,7 +321,7 @@ class PhysicalPlant:
                 elif pump in self.wn.valves:
                     self.values_list.extend([self.wn.valves[pump].flow, self.wn.valves[pump].status])
                 else:
-                    self.logger.error("Error. Actuator " + str(pump)  + " not found in EPANET file")
+                    self.logger.error("Error. Actuator " + str(pump) + " not found in EPANET file")
         elif self.simulator == 'wntr':
 
             for pump in self.pump_list:
@@ -337,7 +336,6 @@ class PhysicalPlant:
             self.extend_valves()
 
         self.extend_attacks()
-
 
     def register_results(self, results=None):
 
@@ -509,7 +507,7 @@ class PhysicalPlant:
         :return: boolean whether all PLCs have finished
         """
 
-        #todo: Prepare query statements for this
+        # todo: Prepare query statements for this
         conn = sqlite3.connect(self.data["db_path"])
         c = conn.cursor()
 
@@ -540,7 +538,7 @@ class PhysicalPlant:
             return int(self.get_from_db(actuator))
         else:
             # Pump speed setting
-            #self.logger.debug('Pump setting value found: ' + str(float(self.get_from_db(actuator))))
+            # self.logger.debug('Pump setting value found: ' + str(float(self.get_from_db(actuator))))
             return float(self.get_from_db(actuator))
 
     def update_actuators(self):
@@ -628,7 +626,7 @@ class PhysicalPlant:
 
     def simulate_with_epynet(self, iteration_limit, p_bar):
         self.logger.info("Starting epynet simulation")
-        simulation_duration = iteration_limit*self.simulation_step
+        simulation_duration = iteration_limit * self.simulation_step
         self.wn.set_time_params(duration=simulation_duration, hydraulic_step=self.simulation_step)
         self.wn.init_simulation(interactive=True)
         internal_epynet_step = 1
@@ -706,7 +704,7 @@ class PhysicalPlant:
             c = conn.cursor()
             c.execute("REPLACE INTO master_time (id, time) VALUES(1, ?)", (str(self.master_time),))
             conn.commit()
-            #time.sleep(0.3)
+            # time.sleep(0.3)
 
     def simulate_with_wntr(self, iteration_limit, p_bar):
         self.logger.info("Starting WNTR simulation")
@@ -852,7 +850,7 @@ class PhysicalPlant:
         end_time = datetime.now()
 
         if 'batch_simulations' in self.data:
-            readme_path = Path(self.data['config_path']).parent / self.data['output_path']\
+            readme_path = Path(self.data['config_path']).parent / self.data['output_path'] \
                           / 'configuration' / 'batch_readme.md'
             os.makedirs(str(readme_path.parent), exist_ok=True)
 

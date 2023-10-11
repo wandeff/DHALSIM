@@ -6,6 +6,8 @@ import subprocess
 import sys
 import py2_logger
 from pathlib import Path
+import networkx as nx
+import matplotlib.pyplot as plt
 
 import yaml
 from datetime import datetime
@@ -60,6 +62,12 @@ class GeneralCPS(MiniCPS):
         else:
             topo = SimpleTopo(self.intermediate_yaml)
 
+        # draw topo graph
+        # automatic_router_path = Path(__file__).parent.absolute() / "graph_draw.py"
+        # subprocess.Popen(["python2", str(automatic_router_path), str(topo)])
+        self.draw_topology(topo)
+        self.logger.info("Drew the net Graph")
+
         self.net = Mininet(topo=topo, autoSetMacs=False, link=TCLink)
 
         self.net.start()
@@ -82,6 +90,19 @@ class GeneralCPS(MiniCPS):
         self.automatic_start()
         self.poll_processes()
         self.finish()
+
+    @staticmethod
+    def draw_topology(topo):
+        G = nx.MultiGraph()
+
+        nodes = topo.g.nodes()
+        edges = topo.g.edges()
+
+        G.add_nodes_from(nodes)
+        G.add_edges_from(edges)
+
+        nx.draw(G, with_labels=True, node_color='lightblue', node_size=1500, font_size=20, font_weight='bold')
+        plt.show()
 
     def interrupt(self, sig, frame):
         """
@@ -122,7 +143,8 @@ class GeneralCPS(MiniCPS):
 
         automatic_router_path = Path(__file__).parent.absolute() / "automatic_router.py"
         node = self.net.get(self.data['scada']['gateway_name'])
-        cmd = ["python2", str(automatic_router_path), str(self.intermediate_yaml), str(self.data['scada']['gateway_name'])]
+        cmd = ["python2", str(automatic_router_path), str(self.intermediate_yaml),
+               str(self.data['scada']['gateway_name'])]
         self.router_processes.append(node.popen(cmd, stderr=sys.stderr, stdout=sys.stdout))
 
         self.logger.info("Launched the SCADA process.")

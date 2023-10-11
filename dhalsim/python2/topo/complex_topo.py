@@ -27,7 +27,6 @@ class LinuxRouter(Node):
         # Enable forwarding on the router
         self.cmd('sysctl net.ipv4.ip_forward=1')
 
-
     def terminate(self):
         self.cmd('sysctl net.ipv4.ip_forward=0')
 
@@ -237,11 +236,11 @@ class ComplexTopo(Topo):
         # TODO: figure out which of these parameters are necessary
         link_params = dict(bw=1000, delay="0ms", loss=0, max_queue_size=1000, use_htb=True)
         # If delays enabled and delay value for this node defined
-        if 'network_delay_data' in self.data and\
+        if 'network_delay_data' in self.data and \
                 self.data['network_delay_values'][yaml_node_data['name']]:
             link_params['delay'] = self.data['network_delay_values'][yaml_node_data['name']]
         # If losses enabled and loss value for this node defined
-        if 'network_loss_data' in self.data and\
+        if 'network_loss_data' in self.data and \
                 self.data['network_loss_values'][yaml_node_data['name']]:
             link_params['loss'] = self.data['network_loss_values'][yaml_node_data['name']]
         # Add link with network parameters
