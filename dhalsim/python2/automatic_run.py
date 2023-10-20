@@ -7,8 +7,7 @@ import sys
 import py2_logger
 from pathlib import Path
 import networkx as nx
-import matplotlib.pyplot as plt
-
+import json
 import yaml
 from datetime import datetime
 from minicps.mcps import MiniCPS
@@ -65,8 +64,10 @@ class GeneralCPS(MiniCPS):
         # draw topo graph
         # automatic_router_path = Path(__file__).parent.absolute() / "graph_draw.py"
         # subprocess.Popen(["python2", str(automatic_router_path), str(topo)])
-        self.draw_topology(topo)
-        self.logger.info("Drew the net Graph")
+        # self.draw_topology(topo)
+        # self.logger.info("Drew the net Graph")
+
+        self.write_topo(topo.g, self.data['output_path'])
 
         self.net = Mininet(topo=topo, autoSetMacs=False, link=TCLink)
 
@@ -91,18 +92,38 @@ class GeneralCPS(MiniCPS):
         self.poll_processes()
         self.finish()
 
+    # @staticmethod
+    # def draw_topology(topo):
+    #     G = nx.MultiGraph()
+    #
+    #     nodes = topo.g.nodes()
+    #     edges = topo.g.edges()
+    #
+    #     G.add_nodes_from(nodes)
+    #     G.add_edges_from(edges)
+    #
+    #     nx.draw(G, with_labels=True, node_color='lightblue', node_size=1500, font_size=20, font_weight='bold')
+    #     plt.show()
+
     @staticmethod
-    def draw_topology(topo):
+    def write_topo(topo, path):
+
+        file_path = path+'/topo.json'
         G = nx.MultiGraph()
 
-        nodes = topo.g.nodes()
-        edges = topo.g.edges()
+        nodes = topo.nodes()
+        edges = topo.edges()
 
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
 
-        nx.draw(G, with_labels=True, node_color='lightblue', node_size=1500, font_size=20, font_weight='bold')
-        plt.show()
+        data = nx.node_link_data(G)
+
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+        with open(file_path, 'w') as file:
+            json.dump(data, file)
 
     def interrupt(self, sig, frame):
         """
