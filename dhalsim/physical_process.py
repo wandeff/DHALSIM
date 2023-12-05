@@ -500,6 +500,7 @@ class PhysicalPlant:
         with self.ground_truth_path.open(mode='w') as f:
             writer = csv.writer(f)
             writer.writerows(results)
+            f.flush()  # 刷新缓冲区
 
     def get_plcs_ready(self, flag):
         """
@@ -689,9 +690,9 @@ class PhysicalPlant:
                 self.results_list.append(self.values_list)
 
                 # Write results of this iteration if needed
-                if 'saving_interval' in self.data and self.master_time != 0 and \
-                        self.master_time % self.data['saving_interval'] == 0:
-                    self.write_results(self.results_list)
+                # if 'saving_interval' in self.data and self.master_time != 0 and \
+                #         self.master_time % self.data['saving_interval'] == 0:
+                self.write_results(self.results_list)
 
             # Set sync flags for nodes
             with sqlite3.connect(self.data["db_path"]) as conn:
@@ -758,9 +759,9 @@ class PhysicalPlant:
             self.results_list.append(self.values_list)
 
             # Write results of this iteration if needed
-            if 'saving_interval' in self.data and self.master_time != 0 and \
-                    self.master_time % self.data['saving_interval'] == 0:
-                self.write_results(self.results_list)
+            # if 'saving_interval' in self.data and self.master_time != 0 and \
+            #         self.master_time % self.data['saving_interval'] == 0:
+            self.write_results(self.results_list)
 
             # Set sync flags for nodes
             with sqlite3.connect(self.data["db_path"]) as conn:

@@ -108,22 +108,48 @@ class GeneralCPS(MiniCPS):
     @staticmethod
     def write_topo(topo, path):
 
-        file_path = path+'/topo.json'
+        file_path = path + '/topo.json'
         G = nx.MultiGraph()
 
-        nodes = topo.nodes()
+        nodes = topo.node
         edges = topo.edges()
 
-        G.add_nodes_from(nodes)
-        G.add_edges_from(edges)
+        jdata = {'nodes': [], 'edges': []}
 
-        data = nx.node_link_data(G)
+        for node_id, node_data in nodes.items():
+            new_node = {'id': node_id, 'label': node_id}
+
+            if 'ip' in node_data:
+                new_node['ip'] = node_data['ip']
+
+            if 'mac' in node_data:
+                new_node['mac'] = node_data['mac']
+
+            if 'defaultRoute' in node_data:
+                new_node['defaultRoute'] = node_data['defaultRoute']
+
+            if node_id == 'scada':
+                new_node['type'] = 'SCADA'
+            elif node_id.startswith('r'):
+                new_node['type'] = 'ROUTER'
+            elif node_id.startswith('s'):
+                new_node['type'] = 'SWITCH'
+            elif node_id.startswith('PLC'):
+                new_node['type'] = 'PLC'
+            else:
+                new_node['type'] = 'unknown'
+
+            jdata['nodes'].append(new_node)
+
+        for edge in edges:
+            new_edge = {'from': edge[0], 'to': edge[1]}
+            jdata['edges'].append(new_edge)
 
         if os.path.exists(file_path):
             os.remove(file_path)
 
         with open(file_path, 'w') as file:
-            json.dump(data, file)
+            json.dump(jdata, file)
 
     def interrupt(self, sig, frame):
         """
