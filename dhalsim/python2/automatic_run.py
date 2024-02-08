@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import shutil
 import signal
 import subprocess
 import sys
@@ -69,6 +70,9 @@ class GeneralCPS(MiniCPS):
 
         self.write_topo(topo.g, self.data['output_path'])
 
+        # blockchain data file
+        self.write_blockchain(self.data['output_path'],self.data['db_path'])
+
         self.net = Mininet(topo=topo, autoSetMacs=False, link=TCLink)
 
         self.net.start()
@@ -104,6 +108,76 @@ class GeneralCPS(MiniCPS):
     #
     #     nx.draw(G, with_labels=True, node_color='lightblue', node_size=1500, font_size=20, font_weight='bold')
     #     plt.show()
+
+    @staticmethod
+    def write_blockchain(path, db_path):
+
+        json_path = path + '/topo.json'
+
+        with open(json_path, 'r') as json_file:
+            data = json.load(json_file)
+
+        plc_nodes = [node for node in data['nodes'] if node.get('type') == 'PLC']
+
+        for plc_node in plc_nodes:
+            # get node id
+            plc_id = plc_node.get('id')
+            #plc_ip = plc_node.get('ip').split('/')[0]
+            plc_ip = "http://127.0.0.1:30{}".format(plc_node.get('mac').split(':')[5])
+            plc_folder_path = os.path.join(path, plc_id)
+
+            # other plc data
+            other_plc_nodes = [node for node in data['nodes'] if node.get('type') == 'PLC' and node.get('id') != plc_id]
+            # other_plc_addresses = ["http://{}:3009".format(node['ip'].split('/')[0]) for node in other_plc_nodes]
+            other_plc_addresses = ["http://127.0.0.1:30{}".format(node['mac'].split(':')[5]) for node in other_plc_nodes]
+
+            # config data
+            config_data = {
+                'ip_address': "127.0.0.1:{}".format(plc_ip.split(':')[-1]),
+                'data_path': plc_folder_path
+            }
+
+            # delete file if it has existed
+            if os.path.exists(plc_folder_path):
+                shutil.rmtree(plc_folder_path)
+
+            # new file
+            os.makedirs(plc_folder_path)
+            os.chown(plc_folder_path, os.getuid(), os.getgid())
+            os.chmod(plc_folder_path, 0o755)
+
+            # new node and write other plc's address
+            node_path = os.path.join(plc_folder_path, 'node')
+            with open(node_path, 'w') as node_file:
+                node_file.write(json.dumps(other_plc_addresses))
+
+            os.chown(node_path, os.getuid(), os.getgid())
+            os.chmod(node_path, 0o644)
+
+
+            # new config.yaml
+            config_path = os.path.join(plc_folder_path, 'config.yaml')
+            with open(config_path, 'w') as config_file:
+                yaml.safe_dump(config_data, config_file, default_flow_style=False, allow_unicode=True)
+            os.chown(config_path, os.getuid(), os.getgid())
+            os.chmod(config_path, 0o644)
+
+            # write sign file to sync data
+            # 0: dhalsin finish write, blockchain can read and clear
+            # 1: dhalsim can start to write
+            sign_path = os.path.join(plc_folder_path, 'sign')
+            with open(sign_path, 'w') as sign_file:
+                sign_file.write('1')
+            os.chown(sign_path, os.getuid(), os.getgid())
+            os.chmod(sign_path, 0o644)
+
+            file_names = ['account', 'blockchain', 'tx', 'untx']
+            for file_name in file_names:
+                file_path = os.path.join(plc_folder_path, file_name)
+                with open(file_path, 'w'):
+                    pass
+                os.chown(file_path, os.getuid(), os.getgid())
+                os.chmod(file_path, 0o644)
 
     @staticmethod
     def write_topo(topo, path):

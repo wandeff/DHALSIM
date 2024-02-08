@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 
+
 class Control:
     """Defines a control for a PLC to enforce
 

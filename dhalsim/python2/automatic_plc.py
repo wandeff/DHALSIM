@@ -87,6 +87,15 @@ class PlcControl(NodeControl):
             out_put = open(empty_loc, 'w')
         cmd = ["python2", str(generic_plc_path), str(self.intermediate_yaml), str(self.plc_index)]
         plc_process = subprocess.Popen(cmd, shell=False, stderr=err_put, stdout=out_put)
+
+        # summon blockchain
+        chain_path = '/home/lzh/blockchain-5.0/console'
+        config_path = str(self.output_path) + '/' + str(self.this_plc_data['name']) + '/config.yaml'
+        cmd_blockchain = ["python3",chain_path, 'miner', 'start', config_path]
+        print(cmd_blockchain)
+
+        subprocess.Popen(cmd_blockchain,shell=False, stderr=err_put, stdout=out_put)
+
         return plc_process
 
 

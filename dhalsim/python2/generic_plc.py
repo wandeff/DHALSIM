@@ -467,6 +467,7 @@ class GenericPLC(BasePLC):
 
             clock = self.get_master_clock()
 
+
             for control in self.controls:
                 control.apply(self)
 

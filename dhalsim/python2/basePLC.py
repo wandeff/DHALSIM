@@ -1,3 +1,5 @@
+import json
+import os
 import signal
 import sys
 import time
@@ -18,13 +20,32 @@ class BasePLC(PLC):
                 # Gaussian noise added with respect to noise_scale
                 if self.noise_scale != 0:
                     sensor_value = float(self.get(tag))
-                    noise_value = np.random.normal(0, self.noise_scale*sensor_value)
+                    noise_value = np.random.normal(0, self.noise_scale * sensor_value)
                     values.append(sensor_value + noise_value)
                 else:
                     values.append(float(self.get(tag)))
             except Exception:
                 self.logger.error("Exception trying to get the tag.")
                 continue
+        # write sensor values to untx
+
+        untx_path = os.path.join(self.intermediate_yaml['output_path'], self.intermediate_plc['name'], 'untx')
+
+        sign_path = os.path.join(self.intermediate_yaml['output_path'], self.intermediate_plc['name'], 'sign')
+
+        while not self.get_sign(sign_path,1):
+            pass
+
+        sensor_values = {sensor: value for sensor, value in zip(self.intermediate_plc['sensors'], values)}
+
+        json_data = json.dumps(sensor_values, indent=2)
+
+        with open(untx_path, 'w') as f:
+            f.write(json_data)
+
+        self.set_sign(sign_path,0)
+
+
         # Send actuator values (unaffected by noise)
         for tag in self.actuators:
             # noinspection PyBroadException
@@ -53,4 +74,18 @@ class BasePLC(PLC):
     def startup(self):
         signal.signal(signal.SIGINT, self.sigint_handler)
         signal.signal(signal.SIGTERM, self.sigint_handler)
-        #thread.start_new_thread(self.send_system_state, (0, 0))
+        # thread.start_new_thread(self.send_system_state, (0, 0))
+
+    def get_sign(self, sign_path, expected_value):
+
+        if os.path.exists(sign_path):
+            with open(sign_path, 'r') as f:
+                current_value = f.read().strip()
+                return current_value == str(expected_value)
+        else:
+            return False
+
+    def set_sign(self, sign_path, new_value):
+
+        with open(sign_path, 'w') as f:
+            f.write(str(new_value))
