@@ -13,6 +13,7 @@ from basePLC import BasePLC
 from entities.attack import TimeAttack, TriggerBelowAttack, TriggerAboveAttack, TriggerBetweenAttack
 from entities.control import AboveControl, BelowControl, TimeControl
 from py2_logger import get_logger
+from smartcontract import smartContract
 
 import threading
 import thread
@@ -67,6 +68,7 @@ class GenericPLC(BasePLC):
 
         self.intermediate_controls = self.intermediate_plc['controls']
         self.controls = self.create_controls(self.intermediate_controls)
+        self.sc = smartContract(self.intermediate_yaml['output_path'],self.intermediate_plc['name'] ,self.controls)
 
         if 'attacks' in self.intermediate_plc.keys():
             self.attacks = self.create_attacks(self.intermediate_plc['attacks'])
@@ -468,8 +470,9 @@ class GenericPLC(BasePLC):
             clock = self.get_master_clock()
 
 
-            for control in self.controls:
-                control.apply(self)
+            # for control in self.controls:
+            #     control.apply(self)
+            self.sc.checkrun(self, self.controls)
 
             for attack in self.attacks:
                 attack.apply(self)

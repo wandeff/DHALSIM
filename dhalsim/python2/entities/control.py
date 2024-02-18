@@ -48,6 +48,9 @@ class BelowControl(Control):
             generic_plc.logger.debug(
                 generic_plc.intermediate_plc["name"] + " applied " + str(self) +
                 " because dep_val " + str(dep_val) + ".")
+    def json(self):
+        dict_ = {'actuator':self.actuator, 'action': self.action, 'value':self.value, 'dependant':self.dependant, 'control':'below'}
+        return dict_
 
     def __str__(self):
         return "Control if {dependant} < {value} then set {actuator} to {action}".format(
@@ -76,6 +79,10 @@ class AboveControl(Control):
             generic_plc.set_tag(self.actuator, self.action)
             generic_plc.logger.debug(
                 generic_plc.intermediate_plc["name"] + " applied " + str(self) + " because dep_val " + str(dep_val))
+    def json(self):
+        dict_ = {'actuator':self.actuator, 'action': self.action, 'value':self.value, 'dependant':self.dependant, 'control':'above'}
+        return dict_
+
 
     def __str__(self):
         return "Control if {dependant} > {value} then set {actuator} to {action}".format(
@@ -101,3 +108,8 @@ class TimeControl(Control):
     def __str__(self):
         return "Control if time = {value} then set {actuator} to {action}".format(
             value=self.value, actuator=self.actuator, action=self.action)
+
+    def json(self):
+        dict_ = {'actuator':self.actuator, 'action': self.action, 'value':self.value, 'control':'time'}
+        return dict_
+
