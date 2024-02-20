@@ -165,13 +165,13 @@ class GeneralCPS(MiniCPS):
             # write sign file to sync data
             # 0: dhalsin finish write, blockchain can read and clear
             # 1: dhalsim can start to write
-            sign_path = os.path.join(plc_folder_path, 'sign')
+            sign_path = os.path.join(plc_folder_path, 'tx')
             with open(sign_path, 'w') as sign_file:
                 sign_file.write('1')
             os.chown(sign_path, os.getuid(), os.getgid())
             os.chmod(sign_path, 0o644)
 
-            file_names = ['account', 'blockchain', 'tx', 'untx']
+            file_names = ['account', 'blockchain', 'sign', 'untx']
             for file_name in file_names:
                 file_path = os.path.join(plc_folder_path, file_name)
                 with open(file_path, 'w'):
@@ -251,10 +251,17 @@ class GeneralCPS(MiniCPS):
         self.plc_processes = []
         if "plcs" in self.data:
             automatic_plc_path = Path(__file__).parent.absolute() / "automatic_plc.py"
+            chain_path = '/home/lzh/blockchain-5.0/console'
             for i, plc in enumerate(self.data["plcs"]):
+                # summon blockchain
+                config_path = str(self.data['output_path']) + '/' + str(plc['name']) + '/config.yaml'
+                cmd_blockchain = ["python3",chain_path, 'miner', 'start', config_path]
+                subprocess.Popen(cmd_blockchain, shell=False, stderr=sys.stderr, stdout=sys.stdout)
+
                 node = self.net.get(plc["name"])
                 cmd = ["python2", str(automatic_plc_path), str(self.intermediate_yaml), str(i)]
                 self.plc_processes.append(node.popen(cmd, stderr=sys.stderr, stdout=sys.stdout))
+
 
         self.logger.info("Launched the PLCs processes.")
 

@@ -59,6 +59,8 @@ class Runner():
                        stderr=subprocess.PIPE)
         subprocess.run(["sudo", "mn", "-c"])
 
+        #subprocess.run(["sudo", "pkill", "-f", "python3"])
+
         InputFilesCopier(self.config_file, intermediate_yaml_path).copy_input_files()
 
         db_initializer = DatabaseInitializer(intermediate_yaml_path)

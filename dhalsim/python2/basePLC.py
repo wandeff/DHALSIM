@@ -31,7 +31,7 @@ class BasePLC(PLC):
 
         untx_path = os.path.join(self.intermediate_yaml['output_path'], self.intermediate_plc['name'], 'untx')
 
-        sign_path = os.path.join(self.intermediate_yaml['output_path'], self.intermediate_plc['name'], 'sign')
+        sign_path = os.path.join(self.intermediate_yaml['output_path'], self.intermediate_plc['name'], 'tx')
 
         while not self.get_sign(sign_path,1):
             pass
