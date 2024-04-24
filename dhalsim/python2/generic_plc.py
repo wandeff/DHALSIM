@@ -68,7 +68,8 @@ class GenericPLC(BasePLC):
 
         self.intermediate_controls = self.intermediate_plc['controls']
         self.controls = self.create_controls(self.intermediate_controls)
-        self.sc = smartContract(self.intermediate_yaml['output_path'],self.intermediate_plc['name'] ,self.controls)
+        # if self.controls:
+        #     self.sc = smartContract(self, self.controls)
 
         if 'attacks' in self.intermediate_plc.keys():
             self.attacks = self.create_attacks(self.intermediate_plc['attacks'])
@@ -454,6 +455,7 @@ class GenericPLC(BasePLC):
             # get fresh local process data and update the local CPPPO
             self.send_system_state()
             self.set_sync(1)
+
             while not self.get_sync(2):
                 pass
 
@@ -469,14 +471,13 @@ class GenericPLC(BasePLC):
 
             clock = self.get_master_clock()
 
-
-            # for control in self.controls:
-            #     control.apply(self)
-            self.sc.checkrun(self, self.controls)
+            for control in self.controls:
+                 control.apply(self)
+            # if self.controls:
+            #     self.sc.checkrun(self, self.controls)
 
             for attack in self.attacks:
                 attack.apply(self)
-
             self.set_sync(3)
 
             if test_break:

@@ -634,21 +634,25 @@ class PhysicalPlant:
         simulation_time = 0
         step_results = None
 
+        iteration_remnant = 10
+
         self.register_initial_results()
         self.results_list.append(self.values_list)
 
         while internal_epynet_step:
 
+            # if iteration_remnant == 1:
+            #     self.logger.info("Last Iteration , sleep {} time".format(simulation_duration/20))
+            #     time.sleep(simulation_duration/20)
+
             # We check that all PLCs updated their local caches and local CPPPO
             while not self.get_plcs_ready(1):
                 time.sleep(self.WAIT_FOR_FLAG)
-
             # Notify the PLCs they can start receiving remote values
             with sqlite3.connect(self.data["db_path"]) as conn:
                 c = conn.cursor()
                 c.execute("UPDATE sync SET flag=2")
                 conn.commit()
-
             # Wait for the PLCs to apply control logic
             while not self.get_plcs_ready(3):
                 time.sleep(self.WAIT_FOR_FLAG)
@@ -685,6 +689,7 @@ class PhysicalPlant:
                                   (x=str(self.master_time),
                                    y=str(iteration_limit), z=str(internal_epynet_step)))
 
+
                 # This becomes ground_truth.csv
                 self.register_results(step_results)
                 self.results_list.append(self.values_list)
@@ -700,11 +705,21 @@ class PhysicalPlant:
                 c.execute("UPDATE sync SET flag=0")
                 conn.commit()
 
+            if str(self.master_time) == str(iteration_limit):
+                self.logger.debug("Last iteration, sleep  {}s to wait blockchain.".format(simulation_duration/20))
+                time.sleep(int(simulation_duration/20))
+                # output_path = self.data['output_path']
+                # for plc in self.data['plcs']:
+                #     tx_path = os.path.join(output_path,plc['name'],'tx')
+                #     with open(tx_path) as f:
+                #         f.write('3')
+
             simulation_time = simulation_time + internal_epynet_step
             conn = sqlite3.connect(self.data["db_path"])
             c = conn.cursor()
             c.execute("REPLACE INTO master_time (id, time) VALUES(1, ?)", (str(self.master_time),))
             conn.commit()
+            iteration_remnant = iteration_remnant-1
             # time.sleep(0.3)
 
     def simulate_with_wntr(self, iteration_limit, p_bar):

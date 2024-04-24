@@ -33,18 +33,22 @@ class BasePLC(PLC):
 
         sign_path = os.path.join(self.intermediate_yaml['output_path'], self.intermediate_plc['name'], 'tx')
 
-        while not self.get_sign(sign_path,1):
+        while not self.get_sign(sign_path, 1):
             pass
 
         sensor_values = {sensor: value for sensor, value in zip(self.intermediate_plc['sensors'], values)}
 
-        json_data = json.dumps(sensor_values, indent=2)
+        quoted_sensor_values = ['"{}: {}"'.format(sensor, value) for sensor, value in sensor_values.items()]
 
         with open(untx_path, 'w') as f:
-            f.write(json_data)
+            f.write('\n'.join(quoted_sensor_values))
 
-        self.set_sign(sign_path,0)
+        # json_data = json.dumps(sensor_values, indent=2)
+        #
+        # with open(untx_path, 'w') as f:
+        #     f.write(json_data)
 
+        self.set_sign(sign_path, 0)
 
         # Send actuator values (unaffected by noise)
         for tag in self.actuators:

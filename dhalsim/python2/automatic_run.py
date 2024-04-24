@@ -71,7 +71,7 @@ class GeneralCPS(MiniCPS):
         self.write_topo(topo.g, self.data['output_path'])
 
         # blockchain data file
-        self.write_blockchain(self.data['output_path'],self.data['db_path'])
+        self.write_blockchain(self.data['output_path'], self.data['db_path'])
 
         self.net = Mininet(topo=topo, autoSetMacs=False, link=TCLink)
 
@@ -91,6 +91,7 @@ class GeneralCPS(MiniCPS):
         self.attacker_processes = None
         self.network_event_processes = None
         self.router_processes = None
+        self.blockchain_processes = None
 
         self.automatic_start()
         self.poll_processes()
@@ -122,14 +123,15 @@ class GeneralCPS(MiniCPS):
         for plc_node in plc_nodes:
             # get node id
             plc_id = plc_node.get('id')
-            #plc_ip = plc_node.get('ip').split('/')[0]
+            # plc_ip = plc_node.get('ip').split('/')[0]
             plc_ip = "http://127.0.0.1:30{}".format(plc_node.get('mac').split(':')[5])
             plc_folder_path = os.path.join(path, plc_id)
 
             # other plc data
             other_plc_nodes = [node for node in data['nodes'] if node.get('type') == 'PLC' and node.get('id') != plc_id]
             # other_plc_addresses = ["http://{}:3009".format(node['ip'].split('/')[0]) for node in other_plc_nodes]
-            other_plc_addresses = ["http://127.0.0.1:30{}".format(node['mac'].split(':')[5]) for node in other_plc_nodes]
+            other_plc_addresses = ["http://127.0.0.1:30{}".format(node['mac'].split(':')[5]) for node in
+                                   other_plc_nodes]
 
             # config data
             config_data = {
@@ -149,11 +151,11 @@ class GeneralCPS(MiniCPS):
             # new node and write other plc's address
             node_path = os.path.join(plc_folder_path, 'node')
             with open(node_path, 'w') as node_file:
-                node_file.write(json.dumps(other_plc_addresses))
+                for address in other_plc_addresses:
+                    node_file.write('"' + address + '"\n')
 
             os.chown(node_path, os.getuid(), os.getgid())
             os.chmod(node_path, 0o644)
-
 
             # new config.yaml
             config_path = os.path.join(plc_folder_path, 'config.yaml')
@@ -249,20 +251,21 @@ class GeneralCPS(MiniCPS):
         self.logger.info('Launched router processes')
 
         self.plc_processes = []
+        self.blockchain_processes = []
         if "plcs" in self.data:
             automatic_plc_path = Path(__file__).parent.absolute() / "automatic_plc.py"
-            chain_path = '/home/lzh/blockchain-5.0/console'
+            chain_path = '/home/lzh/blockchain-5.0/main.py'
             for i, plc in enumerate(self.data["plcs"]):
                 # summon blockchain
                 config_path = str(self.data['output_path']) + '/' + str(plc['name']) + '/config.yaml'
-                cmd_blockchain = ["python3",chain_path, 'miner', 'start', config_path]
-                subprocess.Popen(cmd_blockchain, shell=False, stderr=sys.stderr, stdout=sys.stdout)
+                cmd_blockchain = ["python3", chain_path, config_path]
+                self.blockchain_processes.append(
+                    subprocess.Popen(cmd_blockchain, shell=False, stderr=sys.stderr, stdout=sys.stdout))
 
                 node = self.net.get(plc["name"])
                 cmd = ["python2", str(automatic_plc_path), str(self.intermediate_yaml), str(i)]
                 self.plc_processes.append(node.popen(cmd, stderr=sys.stderr, stdout=sys.stdout))
-
-
+        self.logger.info("Launched the BLockChain processes.")
         self.logger.info("Launched the PLCs processes.")
 
         automatic_scada_path = Path(__file__).parent.absolute() / "automatic_scada.py"
@@ -332,6 +335,7 @@ class GeneralCPS(MiniCPS):
     def poll_processes(self):
         """Polls for all processes and finishes if one closes"""
         processes = []
+        processes.extend(self.blockchain_processes)
         processes.extend(self.plc_processes)
         processes.extend(self.attacker_processes)
         processes.extend(self.router_processes)
@@ -401,6 +405,13 @@ class GeneralCPS(MiniCPS):
             if router.poll() is None:
                 try:
                     self.end_process(router)
+                except Exception as msg:
+                    self.logger.error("Exception shutting down event: " + str(msg))
+
+        for blockchain in self.blockchain_processes:
+            if blockchain.poll() is None:
+                try:
+                    self.end_process(blockchain)
                 except Exception as msg:
                     self.logger.error("Exception shutting down event: " + str(msg))
 

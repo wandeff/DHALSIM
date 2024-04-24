@@ -62,7 +62,7 @@ plcs:
 
 network_topology_type: complex
 
-iterations: 10
+iterations: 3
 
 demand: pdd
 
