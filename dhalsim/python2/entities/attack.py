@@ -18,7 +18,7 @@ class Attack:
         """Returns a to string for the current object"""
         return "{type} \"{name}\" commencing, executing command {command} on actuator" \
                " {actuator}.".format(type=self.__class__.__name__, name=self.name,
-                                      command=self.command, actuator=self.actuator)
+                                     command=self.command, actuator=self.actuator)
 
     @abstractmethod
     def apply(self, plc):
@@ -84,7 +84,7 @@ class TriggerBelowAttack(Attack):
 
     def __str__(self):
         return super(TriggerBelowAttack, self).__str__() + " Triggered because sensor {sensor}" \
-                                                           " fell below {value}."\
+                                                           " fell below {value}." \
             .format(sensor=self.sensor, value=self.value)
 
     def apply(self, plc):
@@ -122,7 +122,7 @@ class TriggerAboveAttack(Attack):
 
     def __str__(self):
         return super(TriggerAboveAttack, self).__str__() + " Triggered because sensor {sensor}" \
-                                                           " fell above {value}."\
+                                                           " fell above {value}." \
             .format(sensor=self.sensor, value=self.value)
 
     def apply(self, plc):
@@ -161,8 +161,34 @@ class TriggerBetweenAttack(Attack):
 
     def __str__(self):
         return super(TriggerBetweenAttack, self).__str__() + " Triggered because sensor {sensor}" \
-                                                             " fell between {lower} and {upper}"\
+                                                             " fell between {lower} and {upper}" \
             .format(sensor=self.sensor, lower=self.lower_value, upper=self.upper_value)
+
+    def apply(self, plc):
+        """
+        Applies the TriggerAttack when necessary
+
+        :param plc: The PLC that will apply the action
+        """
+        sensor_value = plc.get_tag(self.sensor)
+        if self.lower_value < sensor_value < self.upper_value:
+            plc.set_attack_flag(True, self.name)
+            plc.logger.debug(self.__str__())
+            plc.set_tag(self.actuator, self.command)
+        else:
+            plc.set_attack_flag(False, self.name)
+
+
+class ControlAttack(Attack):
+    def __init__(self, name, actuator, index, value):
+        super(ControlAttack, self).__init__(name, actuator, index)
+        self.value = value
+        self.index = index
+
+    def __str__(self):
+        return super(ControlAttack, self).__str__() + " Attack PLC controls because sensor {sensor}" \
+                                                      " fell between {lower} and {upper}" \
+           # .format(sensor=self.sensor, lower=self.lower_value, upper=self.upper_value)
 
     def apply(self, plc):
         """

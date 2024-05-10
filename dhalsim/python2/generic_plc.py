@@ -10,7 +10,7 @@ import random
 import yaml
 
 from basePLC import BasePLC
-from entities.attack import TimeAttack, TriggerBelowAttack, TriggerAboveAttack, TriggerBetweenAttack
+from entities.attack import TimeAttack, TriggerBelowAttack, TriggerAboveAttack, TriggerBetweenAttack, ControlAttack
 from entities.control import AboveControl, BelowControl, TimeControl
 from py2_logger import get_logger
 from smartcontract import smartContract
@@ -68,8 +68,8 @@ class GenericPLC(BasePLC):
 
         self.intermediate_controls = self.intermediate_plc['controls']
         self.controls = self.create_controls(self.intermediate_controls)
-        # if self.controls:
-        #     self.sc = smartContract(self, self.controls)
+        if self.controls:
+            self.sc = smartContract(self, self.controls)
 
         if 'attacks' in self.intermediate_plc.keys():
             self.attacks = self.create_attacks(self.intermediate_plc['attacks'])
@@ -216,6 +216,11 @@ class GenericPLC(BasePLC):
                                          attack['trigger']['sensor'],
                                          attack['trigger']['lower_value'],
                                          attack['trigger']['upper_value']))
+            # elif attack['type'].lower() == "control":
+            #     attacks.append(
+            #         ControlAttack(attack['name'], attack['actuator'], attack['index'],
+            #                       attack['value'])
+            #     )
         return attacks
 
     def pre_loop(self, sleep=0.5):
@@ -471,13 +476,26 @@ class GenericPLC(BasePLC):
 
             clock = self.get_master_clock()
 
-            for control in self.controls:
-                 control.apply(self)
-            # if self.controls:
-            #     self.sc.checkrun(self, self.controls)
+            # for control in self.controls:
+            #      control.apply(self)
+
+            if self.intermediate_yaml['control_attacks']:
+                for attack in self.intermediate_yaml['control_attacks']:
+                    if attack['target'] == self.intermediate_plc['name']:
+                        self.controls[attack['index']].value = attack['value']
+                        self.controls[attack['index']].actuator = attack['actuator']
+                        self.controls[attack['index']].dependant = attack['dependent']
+                        self.controls[attack['index']].action = attack['action']
+
+                        self.logger.warning("Detected {} controls being attacked! restoring controls data from "
+                                            "blockchain...".format(attack['target']))
+
+            if self.controls:
+                self.sc.checkrun(self, self.controls)
 
             for attack in self.attacks:
                 attack.apply(self)
+
             self.set_sync(3)
 
             if test_break:

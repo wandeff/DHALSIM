@@ -1,15 +1,20 @@
 import argparse
+import hashlib
 import logging
 import os
 import shutil
 import signal
 import subprocess
 import sys
+import time
+
 import py2_logger
 from pathlib import Path
 import networkx as nx
 import json
 import yaml
+import jsonpickle
+
 from datetime import datetime
 from minicps.mcps import MiniCPS
 from mininet.net import Mininet
@@ -18,6 +23,7 @@ from mininet.link import TCLink
 
 from topo.simple_topo import SimpleTopo
 from topo.complex_topo import ComplexTopo
+from entities.control import AboveControl, BelowControl, TimeControl
 
 
 class GeneralCPS(MiniCPS):
@@ -71,7 +77,7 @@ class GeneralCPS(MiniCPS):
         self.write_topo(topo.g, self.data['output_path'])
 
         # blockchain data file
-        self.write_blockchain(self.data['output_path'], self.data['db_path'])
+        self.write_blockchain(self, self.data['output_path'], self.data['db_path'], self.data['plcs'])
 
         self.net = Mininet(topo=topo, autoSetMacs=False, link=TCLink)
 
@@ -111,24 +117,53 @@ class GeneralCPS(MiniCPS):
     #     plt.show()
 
     @staticmethod
-    def write_blockchain(path, db_path):
+    def create_controls(controls_list):
+        """
+        Generates list of control objects for a plc
+        :param controls_list: a list of the control dicts to be converted to Control objects
+        """
+        ret = []
+        for control in controls_list:
+            if control["type"].lower() == "above":
+                control_instance = AboveControl(control["actuator"], control["action"],
+                                                control["dependant"],
+                                                control["value"])
+                ret.append(control_instance)
+            if control["type"].lower() == "below":
+                control_instance = BelowControl(control["actuator"], control["action"],
+                                                control["dependant"],
+                                                control["value"])
+                ret.append(control_instance)
+            if control["type"].lower() == "time":
+                control_instance = TimeControl(control["actuator"], control["action"],
+                                               control["value"])
+                ret.append(control_instance)
+        return ret
+
+    @staticmethod
+    def write_blockchain(self, path, db_path, plcs):
 
         json_path = path + '/topo.json'
 
         with open(json_path, 'r') as json_file:
-            data = json.load(json_file)
+            tdata = json.load(json_file)
 
-        plc_nodes = [node for node in data['nodes'] if node.get('type') == 'PLC']
+        plc_nodes = [node for node in tdata['nodes'] if node.get('type') == 'PLC']
 
+        num = 0
         for plc_node in plc_nodes:
             # get node id
             plc_id = plc_node.get('id')
+
             # plc_ip = plc_node.get('ip').split('/')[0]
             plc_ip = "http://127.0.0.1:30{}".format(plc_node.get('mac').split(':')[5])
             plc_folder_path = os.path.join(path, plc_id)
 
             # other plc data
-            other_plc_nodes = [node for node in data['nodes'] if node.get('type') == 'PLC' and node.get('id') != plc_id]
+            # other_plc_nodes = [node for node in data['nodes'] if node.get('type') == 'PLC' and node.get('id') != plc_id]
+            other_plc_nodes = [node for node in tdata.get('nodes', []) if
+                               node.get('type') == 'PLC' and node.get('id') != plc_id]
+
             # other_plc_addresses = ["http://{}:3009".format(node['ip'].split('/')[0]) for node in other_plc_nodes]
             other_plc_addresses = ["http://127.0.0.1:30{}".format(node['mac'].split(':')[5]) for node in
                                    other_plc_nodes]
@@ -173,13 +208,81 @@ class GeneralCPS(MiniCPS):
             os.chown(sign_path, os.getuid(), os.getgid())
             os.chmod(sign_path, 0o644)
 
-            file_names = ['account', 'blockchain', 'sign', 'untx']
+            blockchain_path = os.path.join(plc_folder_path, 'blockchain')
+            with open(blockchain_path, 'w') as blockchain_file:
+                pass
+            os.chown(sign_path, os.getuid(), os.getgid())
+            os.chmod(sign_path, 0o644)
+
+            json_datas = []
+            plc_index = []
+            for plc_c in plcs:
+                controls = self.create_controls(plc_c['controls'])
+
+                plc_index.append(plc_c['name'])
+                json_datas.append(jsonpickle.encode({"controls": controls}))
+
+            blockchain_data = dict()
+
+            # init-block
+            blockchain_data["index"] = 0
+            blockchain_data["timestamp"] = time.time()
+            blockchain_data["tx"] = ''
+            blockchain_data["previous_hash"] = ''
+            blockchain_data["nouce"] = ''
+            header_hash = hashlib.sha256((str(blockchain_data["index"]) + str(
+                blockchain_data["timestamp"]) + str(blockchain_data["tx"]) + str(
+                blockchain_data["previous_hash"])).encode('utf-8')).hexdigest()
+            token = ''.join((header_hash, str(blockchain_data["nouce"]))).encode('utf-8')
+            ghash = hashlib.sha256(token).hexdigest()
+            blockchain_data["hash"] = ghash
+
+            with open(blockchain_path, 'a') as f:
+                json.dump(blockchain_data, f)
+                f.write('\n')
+            # insert controls
+            for json_data, plc_i in zip(json_datas, plc_index):
+                dicts = []
+                with open(blockchain_path, 'r') as f:
+                    # with open(self.filepath, encoding='utf-8-sig', errors='ignore') as f:
+                    for line in f:
+                        line = line.strip()
+                        # cprint('print', 'line: %s' % (str(line, )))
+                        try:
+                            data = json.loads(line)
+                        except json.JSONDecodeError:
+                            continue
+                        dicts.append(data)
+                if len(dicts) > 0:
+                    last_block = dicts[-1]
+                    blockchain_data["index"] = last_block['index'] + 1
+                    blockchain_data["timestamp"] = time.time()
+                    blockchain_data["tx"] = json_data
+                    blockchain_data["previous_hash"] = last_block['hash']
+                    blockchain_data["node"] = ''
+                    blockchain_data["nouce"] = ''
+                    blockchain_data["plc"] = plc_i
+
+                    header_hash = hashlib.sha256((str(blockchain_data["index"]) + str(
+                        blockchain_data["timestamp"]) + str(blockchain_data["tx"]) + str(
+                        blockchain_data["previous_hash"])).encode('utf-8')).hexdigest()
+                    token = ''.join((header_hash, str(blockchain_data["nouce"]))).encode('utf-8')
+                    ghash = hashlib.sha256(token).hexdigest()
+                    blockchain_data["hash"] = ghash
+
+                with open(blockchain_path, 'a') as f:
+                    json.dump(blockchain_data, f)
+                    f.write('\n')
+
+            file_names = ['account', 'sign', 'untx']
             for file_name in file_names:
                 file_path = os.path.join(plc_folder_path, file_name)
                 with open(file_path, 'w'):
                     pass
                 os.chown(file_path, os.getuid(), os.getgid())
                 os.chmod(file_path, 0o644)
+
+            num = num + 1
 
     @staticmethod
     def write_topo(topo, path):

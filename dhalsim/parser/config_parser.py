@@ -218,6 +218,42 @@ class SchemaParser:
         )
     })
 
+    control_attacks = Schema({
+        'name': And(
+            str,
+            attack_pattern,
+        ),
+        'target': And(
+            str,
+            string_pattern
+        ),
+        'index': And(
+            int,
+            Schema(lambda i: i >= 0, error="'index' must be positive.")
+        ),
+        'action': And(
+            str,
+            string_pattern
+        ),
+        'actuator': And(
+            str,
+            string_pattern
+        ),
+        'dependent': And(
+            str,
+            string_pattern
+        ),
+        'value': And(
+            float,
+            Schema(lambda i: i >= 0, error="'iterations' must be positive.")
+        ),
+        'type': And(
+            str,
+            string_pattern
+        ),
+
+    })
+
     network_attacks = Schema(
         Or(
             {
@@ -543,6 +579,7 @@ class SchemaParser:
             Optional('attacks'): {
                 Optional('device_attacks'): [SchemaParser.device_attacks],
                 Optional('network_attacks'): [SchemaParser.network_attacks],
+                Optional('control_attacks'): [SchemaParser.control_attacks],
             },
             Optional('events'): {
                 Optional('network_events'): [SchemaParser.network_events],
@@ -850,6 +887,7 @@ class ConfigParser:
         # Parse the device attacks from the config file
         yaml_data = self.generate_device_attacks(yaml_data)
         yaml_data["network_attacks"] = self.generate_network_attacks()
+        yaml_data["control_attacks"] = self.data["attacks"]["control_attacks"]
 
 
         # Parse network events from the config file
