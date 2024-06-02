@@ -1,0 +1,85 @@
+inp_file: ctown_map.inp
+
+plcs:
+- name: PLC1
+  sensors:
+  - PU1F
+  - PU2F
+  - J280
+  - J269
+  actuators:
+  - PU1
+  - PU2
+- name: PLC2
+  sensors:
+  - T1
+  actuators:
+  - V2
+  - PU4
+  - PU5
+  - PU6
+  - PU7
+- name: PLC3
+  sensors:
+  - T2
+  - V2F
+  - J300
+  - J256
+  - J289
+  - J415
+  - J14
+  - J422
+  - PU4F
+  - PU5F
+  - PU6F
+  - PU7F
+- name: PLC4
+  sensors:
+  - T3
+  - T4
+  actuators:
+  - PU8
+  - PU10
+  - PU11
+- name: PLC5
+  sensors:
+  - PU8F
+  - PU10F
+  - PU11F
+  - J302
+  - J306
+  - J307
+  - J317
+- name: PLC7
+  sensors:
+  - T5
+- name: PLC8
+  sensors:
+  - T6
+- name: PLC9
+  sensors:
+  - T7
+
+network_topology_type: complex
+
+iterations: 10
+
+demand: pdd
+
+log_level: debug
+
+simulator: epynet
+
+attacks:
+  control_attacks:
+  - name: plc2attack
+    target: PLC2
+    index: 1
+    actuator: V2
+    action: closed
+    dependent: T2
+    value: 0.5
+    type: above
+
+
+
