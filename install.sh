@@ -51,6 +51,19 @@ git clone --depth 1 https://github.com/afmurillo/minicps.git || git -C minicps p
 cd minicps
 sudo python2 -m pip install .
 
+# WEBGUI
+cd ~
+git clone --depth 1 https://github.com/WandeF/WebGUI
+cd WebGUI
+sudo ./install.sh
+
+# BlockChain
+cd ~
+git clone --depth 1 https://github.com/WandeF/BlockChain
+cd BlockChain
+sudo ./install.sh
+
+
 # Installing other DHALSIM dependencies
 sudo pip install pathlib==1.0.*
 sudo pip install pyyaml==5.3.*

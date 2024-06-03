@@ -357,11 +357,11 @@ class GeneralCPS(MiniCPS):
         self.blockchain_processes = []
         if "plcs" in self.data:
             automatic_plc_path = Path(__file__).parent.absolute() / "automatic_plc.py"
-            chain_path = '/home/lzh/blockchain-5.0/main.py'
+            chain_path = 'blockchain'
             for i, plc in enumerate(self.data["plcs"]):
                 # summon blockchain
                 config_path = str(self.data['output_path']) + '/' + str(plc['name']) + '/config.yaml'
-                cmd_blockchain = ["python3", chain_path, config_path]
+                cmd_blockchain = [chain_path, config_path]
                 self.blockchain_processes.append(
                     subprocess.Popen(cmd_blockchain, shell=False, stderr=sys.stderr, stdout=sys.stdout))
 
