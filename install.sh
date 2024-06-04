@@ -53,15 +53,15 @@ sudo python2 -m pip install .
 
 # WEBGUI
 cd ~
-git clone --depth 1 https://github.com/WandeF/WebGUI
+git clone --depth 1 https://github.com/WandeF/WebGUI.git
 cd WebGUI
-sudo ./install.sh
+./install.sh
 
 # BlockChain
 cd ~
-git clone --depth 1 https://github.com/WandeF/BlockChain
+git clone --depth 1 https://github.com/WandeF/BlockChain.git
 cd BlockChain
-sudo ./install.sh
+./install.sh
 
 
 # Installing other DHALSIM dependencies
