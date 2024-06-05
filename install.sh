@@ -72,8 +72,12 @@ sudo python2 -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple .
 
 # Installing other DHALSIM dependencies
 sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pathlib==1.0.*
-sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple numpy==1.20.*
+sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple numpy==1.16.*
 sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pathlib
+sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple networkx
+sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pyyaml
+sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple jsonpickle
+sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple mininet
 sudo python3 -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pandas==1.3.4
 sudo python3 -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple matplotlib==3.5.0
 sudo python3 -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple testresources
