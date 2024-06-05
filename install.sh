@@ -37,7 +37,6 @@ sudo apt update
 # Installing necessary packages
 sudo apt install -y python3 python3-pip 
 
-sudo apt install -y python2
 
 # BlockChain
 cd ~
@@ -50,6 +49,9 @@ cd ~
 git clone --depth 1 https://github.com/WandeF/WebGUI.git
 cd WebGUI
 ./install.sh
+
+
+sudo apt install -y python2
 
 
 # Get python2 pip
