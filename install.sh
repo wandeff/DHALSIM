@@ -53,7 +53,7 @@ cd WebGUI
 
 sudo apt install -y python2
 
-
+sudo apt  install curl
 # Get python2 pip
 curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
 sudo python2 get-pip.py -i https://pypi.tuna.tsinghua.edu.cn/simple
@@ -72,7 +72,8 @@ sudo python2 -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple .
 
 # Installing other DHALSIM dependencies
 sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pathlib==1.0.*
-sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple numpy==1.16.*
+sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple numpy==1.20.*
+sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pathlib
 sudo python3 -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pandas==1.3.4
 sudo python3 -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple matplotlib==3.5.0
 sudo python3 -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple testresources
