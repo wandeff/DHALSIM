@@ -35,7 +35,22 @@ sleep 3
 sudo apt update
 
 # Installing necessary packages
-sudo apt install -y git python2 python3 python3-pip curl
+sudo apt install -y python3 python3-pip 
+
+sudo apt install -y python2
+
+# BlockChain
+cd ~
+git clone --depth 1 https://github.com/WandeF/BlockChain.git
+cd BlockChain
+./install.sh
+
+# WEBGUI
+cd ~
+git clone --depth 1 https://github.com/WandeF/WebGUI.git
+cd WebGUI
+./install.sh
+
 
 # Get python2 pip
 curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
@@ -51,17 +66,6 @@ git clone --depth 1 https://github.com/afmurillo/minicps.git || git -C minicps p
 cd minicps
 sudo python2 -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple .
 
-# WEBGUI
-cd ~
-git clone --depth 1 https://github.com/WandeF/WebGUI.git
-cd WebGUI
-./install.sh
-
-# BlockChain
-cd ~
-git clone --depth 1 https://github.com/WandeF/BlockChain.git
-cd BlockChain
-./install.sh
 
 
 # Installing other DHALSIM dependencies
