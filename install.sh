@@ -39,16 +39,16 @@ sudo apt install -y python3 python3-pip
 
 
 # BlockChain
-cd ~
-git clone --depth 1 https://github.com/WandeF/BlockChain.git
-cd BlockChain
-./install.sh
+# cd ~
+# git clone --depth 1 https://github.com/WandeF/BlockChain.git
+# cd BlockChain
+# ./install.sh
 
 # WEBGUI
-cd ~
-git clone --depth 1 https://github.com/WandeF/WebGUI.git
-cd WebGUI
-./install.sh
+# cd ~
+# git clone --depth 1 https://github.com/WandeF/WebGUI.git
+# cd WebGUI
+# ./install.sh
 
 
 sudo apt install -y python2
@@ -56,31 +56,31 @@ sudo apt install -y python2
 sudo apt  install curl
 # Get python2 pip
 curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
-sudo python2 get-pip.py -i https://pypi.tuna.tsinghua.edu.cn/simple
+sudo python2 get-pip.py -i http://mirrors.aliyun.com/pypi/simple/
 rm get-pip.py
 
 # CPPPO Correct Version 4.0.*
-sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple cpppo==4.0.*
+sudo pip install -i http://mirrors.aliyun.com/pypi/simple/ cpppo==4.0.*
 
 # MiniCPS
 cd ~
 git clone --depth 1 https://github.com/afmurillo/minicps.git || git -C minicps pull
 cd minicps
-sudo python2 -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple .
+sudo python2 -m pip install -i http://mirrors.aliyun.com/pypi/simple/ .
 
 
 
 # Installing other DHALSIM dependencies
-sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pathlib==1.0.*
-sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple numpy==1.16.*
-sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pathlib
-sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple networkx
-sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pyyaml
-sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple jsonpickle
-sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple mininet
-sudo python3 -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pandas==1.3.4
-sudo python3 -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple matplotlib==3.5.0
-sudo python3 -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple testresources
+sudo pip install -i http://mirrors.aliyun.com/pypi/simple/ pathlib==1.0.*
+sudo pip install -i http://mirrors.aliyun.com/pypi/simple/ numpy==1.16.*
+sudo pip install -i http://mirrors.aliyun.com/pypi/simple/ pathlib
+sudo pip install -i http://mirrors.aliyun.com/pypi/simple/ networkx
+sudo pip install -i http://mirrors.aliyun.com/pypi/simple/ pyyaml
+sudo pip install -i http://mirrors.aliyun.com/pypi/simple/ jsonpickle
+sudo pip install -i http://mirrors.aliyun.com/pypi/simple/ mininet
+sudo python3 -m pip install -i http://mirrors.aliyun.com/pypi/simple/ pandas==1.3.4
+sudo python3 -m pip install -i http://mirrors.aliyun.com/pypi/simple/ matplotlib==3.5.0
+sudo python3 -m pip install -i http://mirrors.aliyun.com/pypi/simple/ testresources
 
 # Mininet from source
 cd ~
@@ -91,17 +91,17 @@ sudo PYTHON=python2 ./util/install.sh -fnv
 # Installing testing pip dependencies
 if [ "$test" = true ]
 then
-  sudo pip2 install -i https://pypi.tuna.tsinghua.edu.cn/simple netaddr==0.8.*
-  sudo pip2 install -i https://pypi.tuna.tsinghua.edu.cn/simple flaky==3.7.*
-  sudo pip2 install -i https://pypi.tuna.tsinghua.edu.cn/simple pytest==4.6.*
-  sudo pip2 install -i https://pypi.tuna.tsinghua.edu.cn/simple pytest-timeout==1.4.*
-  sudo pip2 install -i https://pypi.tuna.tsinghua.edu.cn/simple pytest-cov==2.12.*
-  sudo pip2 install -i https://pypi.tuna.tsinghua.edu.cn/simple pytest-mock==3.6.*
+  sudo pip2 install -i http://mirrors.aliyun.com/pypi/simple/ netaddr==0.8.*
+  sudo pip2 install -i http://mirrors.aliyun.com/pypi/simple/ flaky==3.7.*
+  sudo pip2 install -i http://mirrors.aliyun.com/pypi/simple/ pytest==4.6.*
+  sudo pip2 install -i http://mirrors.aliyun.com/pypi/simple/ pytest-timeout==1.4.*
+  sudo pip2 install -i http://mirrors.aliyun.com/pypi/simple/ pytest-cov==2.12.*
+  sudo pip2 install -i http://mirrors.aliyun.com/pypi/simple/ pytest-mock==3.6.*
 fi
 
 # Install netfilterqueue for Simple DoS attacks
 sudo apt install -y python3-pip git libnfnetlink-dev libnetfilter-queue-dev
-sudo python3 -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -U git+https://github.com/kti/python-netfilterqueue
+sudo python3 -m pip install -i http://mirrors.aliyun.com/pypi/simple/ -U git+https://github.com/kti/python-netfilterqueue
 
 # Install DHALSIM
 cd "${cwd}" || { printf "Failure: Could not find DHALSIM directory\n"; exit 1; }
@@ -109,7 +109,7 @@ cd "${cwd}" || { printf "Failure: Could not find DHALSIM directory\n"; exit 1; }
 # Install without doc and test
 if [ "$test" = false ] && [ "$doc" = false ]
 then
-  sudo python3 -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -e .
+  sudo python3 -m pip install -i http://mirrors.aliyun.com/pypi/simple/ -e .
 
   printf "\nInstallation finished. You can now run DHALSIM by using \n\t<sudo dhalsim your_config.yaml>.\n"
   exit 0;
@@ -118,7 +118,7 @@ fi
 # Install doc
 if [ "$test" = false ]
 then
-  sudo python3 -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -e .[doc]
+  sudo python3 -m pip install -i http://mirrors.aliyun.com/pypi/simple/ -e .[doc]
 
   printf "\nInstallation finished. You can now run DHALSIM by using \n\t<sudo dhalsim your_config.yaml>.\n"
   exit 0;
@@ -127,7 +127,7 @@ fi
 # Install test
 if [ "$doc" = false ]
 then
-  sudo python3 -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -e .[test]
+  sudo python3 -m pip install -i http://mirrors.aliyun.com/pypi/simple/ -e .[test]
 
   printf "\nInstallation finished. You can now run DHALSIM by using \n\t<sudo dhalsim your_config.yaml>.\n"
   exit 0;
