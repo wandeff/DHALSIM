@@ -48,7 +48,7 @@ class BasePLC(PLC):
         # with open(untx_path, 'w') as f:
         #     f.write(json_data)
 
-        self.set_sign(sign_path, 0)
+        # self.set_sign(sign_path, 0)
 
         # Send actuator values (unaffected by noise)
         for tag in self.actuators:
