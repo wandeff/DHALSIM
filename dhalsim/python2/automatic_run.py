@@ -362,8 +362,8 @@ class GeneralCPS(MiniCPS):
                 # summon blockchain
                 config_path = str(self.data['output_path']) + '/' + str(plc['name']) + '/config.yaml'
                 cmd_blockchain = [chain_path, config_path]
-                self.blockchain_processes.append(
-                    subprocess.Popen(cmd_blockchain, shell=False, stderr=sys.stderr, stdout=sys.stdout))
+                # self.blockchain_processes.append(
+                #    subprocess.Popen(cmd_blockchain, shell=False, stderr=sys.stderr, stdout=sys.stdout))
 
                 node = self.net.get(plc["name"])
                 cmd = ["python2", str(automatic_plc_path), str(self.intermediate_yaml), str(i)]
