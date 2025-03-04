@@ -476,22 +476,22 @@ class GenericPLC(BasePLC):
 
             clock = self.get_master_clock()
 
-            # for control in self.controls:
-            #      control.apply(self)
+            for control in self.controls:
+                control.apply(self)
 
-            if self.intermediate_yaml['control_attacks']:
-                for attack in self.intermediate_yaml['control_attacks']:
-                    if attack['target'] == self.intermediate_plc['name']:
-                        self.controls[attack['index']].value = attack['value']
-                        self.controls[attack['index']].actuator = attack['actuator']
-                        self.controls[attack['index']].dependant = attack['dependent']
-                        self.controls[attack['index']].action = attack['action']
+           # if self.intermediate_yaml['control_attacks']:
+            #    for attack in self.intermediate_yaml['control_attacks']:
+             #       if attack['target'] == self.intermediate_plc['name']:
+              #          self.controls[attack['index']].value = attack['value']
+               #         self.controls[attack['index']].actuator = attack['actuator']
+                #        self.controls[attack['index']].dependant = attack['dependent']
+                 #       self.controls[attack['index']].action = attack['action']
 
-                        self.logger.warning("Detected {} controls being attacked! restoring controls data from "
-                                            "blockchain...".format(attack['target']))
+                  #      self.logger.warning("Detected {} controls being attacked! restoring controls data from "
+                   #                         "blockchain...".format(attack['target']))
 
-            if self.controls:
-                self.sc.checkrun(self, self.controls)
+            #if self.controls:
+             #   self.sc.checkrun(self, self.controls)
 
             for attack in self.attacks:
                 attack.apply(self)
