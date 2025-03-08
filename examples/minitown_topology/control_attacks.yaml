@@ -1,0 +1,12 @@
+control_attacks:
+  - name: plc2attack
+    target: PLC2
+    index: 0
+    actuator: PUMP1
+    action: closed
+    dependent: TANK
+    value: 4.0
+    type: below
+    begin: 20
+    end: 40
+

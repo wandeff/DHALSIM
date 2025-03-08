@@ -1,0 +1,9 @@
+network_attacks:
+    - name: plc2attack
+      target: PLC2
+      trigger:
+        type: time
+        start: 20
+        end: 40
+      type: simple_dos
+      direction: destination

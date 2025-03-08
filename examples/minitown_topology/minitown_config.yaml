@@ -1,8 +1,13 @@
 inp_file: minitown_map.inp
 output_path: output
-iterations: 1000
+iterations: 60
+network_topology_type: complex
+log_level: debug
+simulator: epynet
 
 plcs: !include minitown_plcs.yaml
-attacks: !include minitown_attacks.yaml
+#attacks: !include control_attacks.yaml
+#attacks: !include mitm_attacks.yaml
+attacks: !include dos_attacks.yaml
 
 initial_tank_data: initial_tank.csv

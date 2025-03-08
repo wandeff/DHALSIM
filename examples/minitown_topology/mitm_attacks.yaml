@@ -1,0 +1,11 @@
+network_attacks:
+  - name: plc1attack
+    type: server_mitm
+    trigger:
+      type: Time
+      start: 20
+      end: 40
+    tags:
+      - tag: TANK
+        offset: -3
+    target: PLC1
