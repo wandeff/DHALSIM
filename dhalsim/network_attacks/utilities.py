@@ -15,6 +15,7 @@ def get_mac(an_ip):
     return target_mac
 
 
+
 def launch_arp_poison(ip1, ip2):
     """
     This function will start the ARP spoofing between two provided IPs
