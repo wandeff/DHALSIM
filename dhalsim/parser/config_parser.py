@@ -245,13 +245,20 @@ class SchemaParser:
         ),
         'value': And(
             float,
-            Schema(lambda i: i >= 0, error="'iterations' must be positive.")
+            Schema(lambda i: i >= 0, error="'value' must be positive.")
         ),
         'type': And(
             str,
             string_pattern
         ),
-
+        'begin': And(
+            int,
+            Schema(lambda i: i >= 0, error="'iterations' must be positive.")
+        ),
+        'end': And(
+            int,
+            Schema(lambda i: i >= 0, error="'iterations' must be positive.")
+        ),
     })
 
     network_attacks = Schema(
@@ -887,7 +894,8 @@ class ConfigParser:
         # Parse the device attacks from the config file
         yaml_data = self.generate_device_attacks(yaml_data)
         yaml_data["network_attacks"] = self.generate_network_attacks()
-        yaml_data["control_attacks"] = self.data["attacks"]["control_attacks"]
+        if 'attacks' in self.data and 'control_attacks' in self.data['attacks']:
+            yaml_data["control_attacks"] = self.data['attacks']['control_attacks']
 
 
         # Parse network events from the config file
