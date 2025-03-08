@@ -51,12 +51,14 @@ class GenericPLC(BasePLC):
     """ Time in seconds the SCADA server updates its cache"""
 
     def __init__(self, intermediate_yaml_path, yaml_index):
+        self.iteration = 1
         self.yaml_index = yaml_index
 
         with intermediate_yaml_path.open() as yaml_file:
             self.intermediate_yaml = yaml.load(yaml_file, Loader=yaml.FullLoader)
 
         self.logger = get_logger(self.intermediate_yaml['log_level'])
+
 
         self.intermediate_plc = self.intermediate_yaml["plcs"][self.yaml_index]
 
@@ -444,6 +446,7 @@ class GenericPLC(BasePLC):
         :param test_break:  (Default value = False) used for unit testing, breaks the loop after one iteration
         """
         self.logger.debug(self.intermediate_plc['name'] + ' enters main_loop')
+        self.iteration = 1
         while True:
             # Wait until we acquire the first sync before polling the PLCs
             if not self.plcs_ready:
@@ -476,22 +479,29 @@ class GenericPLC(BasePLC):
 
             clock = self.get_master_clock()
 
-            for control in self.controls:
-                control.apply(self)
+            #for control in self.controls:
+            #    control.apply(self)
 
-           # if self.intermediate_yaml['control_attacks']:
-            #    for attack in self.intermediate_yaml['control_attacks']:
-             #       if attack['target'] == self.intermediate_plc['name']:
-              #          self.controls[attack['index']].value = attack['value']
-               #         self.controls[attack['index']].actuator = attack['actuator']
-                #        self.controls[attack['index']].dependant = attack['dependent']
-                 #       self.controls[attack['index']].action = attack['action']
+            if 'control_attacks' in self.intermediate_yaml :
+                control1 = self.controls
+                if self.intermediate_yaml['control_attacks'][0]['begin'] <= self.iteration <= self.intermediate_yaml['control_attacks'][0]['end']:
+                    for attack in self.intermediate_yaml['control_attacks']:
+                        if attack['target'] == self.intermediate_plc['name']:
+                            control1[attack['index']].value = attack['value']
+                            control1[attack['index']].actuator = attack['actuator']
+                            control1[attack['index']].dependant = attack['dependent']
+                            control1[attack['index']].action = attack['action']
 
-                  #      self.logger.warning("Detected {} controls being attacked! restoring controls data from "
-                   #                         "blockchain...".format(attack['target']))
-
+                            #self.logger.warning("Detected {} controls being attacked! restoring controls data from "
+                            #                    "blockchain...".format(attack['target']))
+                            self.logger.warning("A {} control attack is being executed".format(attack['target']))
+                    for control in control1:
+                        control.apply(self)
+            else:
+                for control in self.controls:
+                    control.apply(self)
             #if self.controls:
-             #   self.sc.checkrun(self, self.controls)
+            #    self.sc.checkrun(self, self.controls)
 
             for attack in self.attacks:
                 attack.apply(self)
@@ -500,6 +510,8 @@ class GenericPLC(BasePLC):
 
             if test_break:
                 break
+
+            self.iteration = self.iteration + 1
 
 
 def is_valid_file(parser_instance, arg):
