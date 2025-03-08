@@ -37,7 +37,11 @@ sudo apt update
 # Installing necessary packages
 sudo apt install -y python3 python3-pip 
 
-
+# WEBGUI
+cd ~
+git clone --depth 1 https://github.com/WandeF/WebGUI.git
+cd WebGUI
+./install.sh
 
 
 
