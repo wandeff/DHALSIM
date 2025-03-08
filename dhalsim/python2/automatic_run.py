@@ -77,6 +77,7 @@ class GeneralCPS(MiniCPS):
         self.write_topo(topo.g, self.data['output_path'])
 
         # blockchain data file
+
         self.write_blockchain(self, self.data['output_path'], self.data['db_path'], self.data['plcs'])
 
         self.net = Mininet(topo=topo, autoSetMacs=False, link=TCLink)
