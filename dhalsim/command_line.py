@@ -71,6 +71,8 @@ class Runner():
         self.automatic_run = subprocess.Popen(
             ["python2", str(automatic_run_path), str(intermediate_yaml_path)])
 
+        self.automatic_run.wait()
+
 
 
 
